@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Coterie.Api.Interfaces;
+﻿using Coterie.Api.Interfaces;
 using Coterie.Api.Models.Requests;
 using Coterie.Api.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -10,21 +9,17 @@ namespace Coterie.Api.Controllers
     [Route("[controller]")]
     public class TestController : CoterieBaseController
     {
-        private readonly ITestService _testService;
+        private readonly IQuoteOrchestrator _quoteOrchestrator;
         
-        public TestController(ITestService testService)
+        public TestController(IQuoteOrchestrator quoteOrchestrator)
         {
-            _testService = testService;
+            _quoteOrchestrator = quoteOrchestrator;
         }
 
         [HttpPost]
-        public ActionResult<ItemsResponse<WeatherForecastResponse>> Get(TestRequest request)
+        public ActionResult<QuoteResponse> Get(QuoteRequest request)
         {
-            var result = _testService.GetWeatherItems(request.Seasons);
-            return new ItemsResponse<WeatherForecastResponse>
-            {
-                Items = result.ToList()
-            };
+            return _quoteOrchestrator.GetQuote(request);
         }
     }
 }

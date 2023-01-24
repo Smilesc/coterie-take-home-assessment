@@ -28,7 +28,7 @@ namespace Coterie.Api
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "Coterie.Api", Version = "v1"});
             });
 
-            services.AddScoped<ITestService, TestService>();
+            services.AddScoped<IQuoteOrchestrator, QuoteOrchestrator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
