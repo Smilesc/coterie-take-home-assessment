@@ -16,10 +16,5 @@ namespace Coterie.Api
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IQuoteOrchestrator, QuoteOrchestrator>();
-        }
     }
 }

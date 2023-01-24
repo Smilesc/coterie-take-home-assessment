@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Coterie.Api.Models;
 using Coterie.Api.Models.Responses;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
@@ -23,23 +22,13 @@ namespace Coterie.Api.ExceptionHelpers
 
             var appContext = context.Features.Get<IExceptionHandlerPathFeature>();
 
-            BaseExceptionResponse ex = default;
-
-            switch (appContext.Error)
+            response.StatusCode = appContext.Error switch
             {
-                case IndexOutOfRangeException:
-                case NullReferenceException:
-                case ArgumentException:
-                    // Bad Request status
-                    response.StatusCode = (int) HttpStatusCode.BadRequest;
-                    break;
-                default:
-                    // unhandled error
-                    response.StatusCode = (int) HttpStatusCode.InternalServerError;
-                    break;
-            }
+                IndexOutOfRangeException or NullReferenceException or ArgumentException => (int) HttpStatusCode.BadRequest,
+                _ => (int) HttpStatusCode.InternalServerError
+            };
 
-            ex = new BaseExceptionResponse
+            var ex = new BaseExceptionResponse
             {
                 Message = appContext.Error.Message
             };

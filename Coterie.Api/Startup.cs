@@ -1,12 +1,14 @@
 using Coterie.Api.ExceptionHelpers;
 using Coterie.Api.Interfaces;
 using Coterie.Api.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using FluentValidation.AspNetCore;
 
 namespace Coterie.Api
 {
@@ -29,6 +31,7 @@ namespace Coterie.Api
             });
 
             services.AddScoped<IQuoteOrchestrator, QuoteOrchestrator>();
+            services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<Startup>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +52,7 @@ namespace Coterie.Api
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
         }
     }
 }

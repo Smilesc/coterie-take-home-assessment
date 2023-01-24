@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Coterie.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class TestController : CoterieBaseController
+    [Route("quote")]
+    public class QuoteController : Controller
     {
         private readonly IQuoteOrchestrator _quoteOrchestrator;
         
-        public TestController(IQuoteOrchestrator quoteOrchestrator)
+        public QuoteController(IQuoteOrchestrator quoteOrchestrator)
         {
             _quoteOrchestrator = quoteOrchestrator;
         }
