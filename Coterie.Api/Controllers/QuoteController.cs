@@ -16,10 +16,15 @@ namespace Coterie.Api.Controllers
             _quoteOrchestrator = quoteOrchestrator;
         }
 
+        /// <summary>
+        /// Generate per-state insurance quotes for a business
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
-        public ActionResult<QuoteResponse> Get(QuoteRequest request)
+        public ActionResult<QuoteResponse> GenerateQuote(QuoteRequest request)
         {
-            return _quoteOrchestrator.GetQuote(request);
+            return _quoteOrchestrator.GenerateQuote(request);
         }
     }
 }

@@ -6,6 +6,6 @@ namespace Coterie.Api.Interfaces
 {
     public interface IQuoteOrchestrator
     {
-        QuoteResponse GetQuote(QuoteRequest request);
+        QuoteResponse GenerateQuote(QuoteRequest request);
     }
 }

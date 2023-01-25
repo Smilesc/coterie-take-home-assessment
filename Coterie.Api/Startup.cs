@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using FluentValidation.AspNetCore;
+using System.IO;
+using System.Reflection;
+using System;
 
 namespace Coterie.Api
 {
@@ -28,6 +31,8 @@ namespace Coterie.Api
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "Coterie.Api", Version = "v1"});
+                var docs = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+                c.IncludeXmlComments(docs);
             });
 
             services.AddScoped<IQuoteOrchestrator, QuoteOrchestrator>();

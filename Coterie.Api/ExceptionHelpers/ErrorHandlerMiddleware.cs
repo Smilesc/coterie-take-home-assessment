@@ -24,7 +24,7 @@ namespace Coterie.Api.ExceptionHelpers
 
             response.StatusCode = appContext.Error switch
             {
-                IndexOutOfRangeException or NullReferenceException or ArgumentException => (int) HttpStatusCode.BadRequest,
+                IndexOutOfRangeException or ArgumentException => (int) HttpStatusCode.BadRequest,
                 _ => (int) HttpStatusCode.InternalServerError
             };
 

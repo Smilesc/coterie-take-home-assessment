@@ -12,7 +12,7 @@ namespace Coterie.Api.Services
     {
         private const int HazardFactor = 4;
 
-        public QuoteResponse GetQuote(QuoteRequest request)
+        public QuoteResponse GenerateQuote(QuoteRequest request)
         {
             var basePremium = Math.Ceiling(request.Revenue/1000);
             var businessModifier = QuoteConstants.Businesses.First(x => x.BusinessName == request.Business.ToUpper()).Modifier;

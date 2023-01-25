@@ -14,11 +14,11 @@ namespace Coterie.Api.Models.Validators
             RuleFor(x => x.States)
             .Must(states => states.TrueForAll(state =>
                 QuoteConstants.States.Exists(x => state.ToUpper() == x.FullName || state.ToUpper() == x.AbbreviatedName)))
-            .WithMessage("At least one of the states given isn't supported");
+            .WithMessage("At least one of the states given isn't supported").WithErrorCode("UNSUP_STATE");
 
             RuleFor(x => x.Business)
                 .Must(business => QuoteConstants.Businesses.Exists(x => business.ToUpper() == x.BusinessName))
-                .WithMessage("The business given isn't supported");
+                .WithMessage("The business given isn't supported").WithErrorCode("UNSUP_BUSINESS");
         }
     }
 }
