@@ -15,7 +15,7 @@ namespace Coterie.Api.Models.Requests
         /// <summary>
         /// The business's revenue
         /// </summary>
-        public double Revenue { get; set; }
+        public decimal Revenue { get; set; }
 
         /// <summary>
         /// The states to generate quotes for

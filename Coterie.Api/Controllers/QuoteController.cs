@@ -1,4 +1,7 @@
-﻿using Coterie.Api.Interfaces;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Coterie.Api.Interfaces;
+using Coterie.Api.Models;
 using Coterie.Api.Models.Requests;
 using Coterie.Api.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +28,12 @@ namespace Coterie.Api.Controllers
         public ActionResult<QuoteResponse> GenerateQuote(QuoteRequest request)
         {
             return _quoteOrchestrator.GenerateQuote(request);
+        }
+
+        [HttpGet("states")]
+        public ActionResult<StateResponse> GetStates()
+        {
+            return _quoteOrchestrator.GetStates();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Coterie.Api.Models.Responses
         /// <summary>
         /// The input revenue
         /// </summary>
-        public double Revenue { get; set; }
+        public decimal Revenue { get; set; }
 
         /// <summary>
         /// The premiums calculated for each state

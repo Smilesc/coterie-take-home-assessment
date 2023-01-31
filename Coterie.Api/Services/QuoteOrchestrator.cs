@@ -1,23 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Coterie.Api.Interfaces;
 using Coterie.Api.Models;
 using Coterie.Api.Models.Requests;
 using Coterie.Api.Models.Responses;
+using Coterie.Api.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Coterie.Api.Services
 {
     public class QuoteOrchestrator : IQuoteOrchestrator
     {
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IMemoryCache _memoryCache;
+        
         private const int HazardFactor = 4;
 
+        public QuoteOrchestrator(IQuoteRepository quoteRepository, IMemoryCache memoryCache)
+        {
+            _quoteRepository = quoteRepository;
+            _memoryCache = memoryCache;
+        }
+        
         public QuoteResponse GenerateQuote(QuoteRequest request)
         {
             var basePremium = Math.Ceiling(request.Revenue/1000);
-            var businessModifier = QuoteConstants.Businesses.First(x => x.BusinessName == request.Business.ToUpper()).Modifier;
+            var business = GetBusiness(request.Business);
 
-            var premiumModifier = basePremium * businessModifier * HazardFactor;
+            var premiumModifier = basePremium * business.Modifier * HazardFactor;
 
             var quoteResponse = new QuoteResponse 
             { 
@@ -35,12 +47,43 @@ namespace Coterie.Api.Services
                 quoteResponse.Premiums.Add(
                     new StatePremium 
                     {
-                        Premium = premium, 
+                        Premium = decimal.Round(premium,2), 
                         State = stateInfo.AbbreviatedName
                     });
             }
 
             return quoteResponse;
+        }
+
+        public StateResponse GetStates()
+        {
+            var stateKey = "states";
+
+            if (_memoryCache.TryGetValue(stateKey, out IEnumerable<State> cachedStates))
+                return new StateResponse { States = cachedStates };
+            
+            var states = _quoteRepository.GetStates().ToList();
+            
+            _memoryCache.Set("states", states, TimeSpan.FromHours(6));
+            
+            return new StateResponse
+            {
+                States = states
+            };
+        }
+        
+        public Business GetBusiness(string requestedBusiness)
+        {
+            var key = $"business:{requestedBusiness.ToUpper()}";
+
+            if (_memoryCache.TryGetValue(key, out Business cachedBusiness))
+                return cachedBusiness;
+
+            var business = _quoteRepository.GetBusiness(requestedBusiness);
+            
+            _memoryCache.Set($"business:{requestedBusiness.ToUpper()}", business, TimeSpan.FromHours(6));
+
+            return business;
         }
     }
 }

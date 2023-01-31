@@ -5,7 +5,7 @@
         /// <summary>
         /// The calculated premium
         /// </summary>
-        public double Premium { get; set; }
+        public decimal Premium { get; set; }
 
         /// <summary>
         /// The state the premium has been calculated for,

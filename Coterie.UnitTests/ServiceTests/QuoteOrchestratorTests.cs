@@ -1,28 +1,38 @@
 using Coterie.Api.Models.Requests;
 using Xunit;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Coterie.Api.Interfaces;
+using Coterie.Api.Models;
+using Coterie.Api.Repositories;
 using Coterie.Api.Services;
+using Microsoft.Extensions.Caching.Memory;
+using NSubstitute;
 
 namespace Coterie.UnitTests
 {
     public class QuoteOrchestratorTests
     {
         private readonly IQuoteOrchestrator _quoteOrchestrator;
-        public QuoteOrchestratorTests() 
+
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IMemoryCache _memoryCache;
+        
+        public QuoteOrchestratorTests()
         {
-            var quoteOrchestrator = new QuoteOrchestrator();
-            _quoteOrchestrator = quoteOrchestrator;
+            _quoteRepository = Substitute.For<IQuoteRepository>();
+            _memoryCache = Substitute.For<IMemoryCache>();
+            _quoteOrchestrator = new QuoteOrchestrator(_quoteRepository, _memoryCache);
         }
 
         [Theory]
-        [InlineData("Ohio", "Plumber", 1000, "OH")]
-        [InlineData("Florida", "Architect", 2400, "FL")]
-        [InlineData("Texas", "Programmer", 2357.50, "TX")]
-        public void BasedOnStateAndBusiness_ReturnsExpectedPremium(string state, string business, double expectedPremium, string expectedState)
+        [InlineData("Ohio", "Plumber", 0.5, 1000, "OH")]
+        [InlineData("Florida", "Architect", 1, 2400, "FL")]
+        [InlineData("Texas", "Programmer", 1.25, 2357.50, "TX")]
+        public void BasedOnStateAndBusiness_ReturnsExpectedPremium(string state, string business, decimal modifier, decimal expectedPremium, string expectedState)
         {
             // Arrange
-            const double revenue = 500000;
+            const decimal revenue = 500000;
 
             var request = new QuoteRequest 
             { 
@@ -31,6 +41,8 @@ namespace Coterie.UnitTests
                 Revenue = revenue
             };
 
+            _quoteRepository.GetBusiness(business).Returns(new Business { Id = business, Modifier = modifier });
+                
             // Act
             var result = _quoteOrchestrator.GenerateQuote(request);
 
@@ -47,8 +59,9 @@ namespace Coterie.UnitTests
         public void MultipleStates_ReturnsPremiumPerState()
         {
             // Arrange
-            const double revenue = 400000;
+            const decimal revenue = 400000;
             const string business = "Programmer";
+            const decimal businessModifier = 1.25m;
 
             var request = new QuoteRequest 
             { 
@@ -56,6 +69,7 @@ namespace Coterie.UnitTests
                 States = new List<string> { "Ohio", "FL", "tx" },
                 Revenue = revenue
             };
+            _quoteRepository.GetBusiness(business).Returns(new Business { Id = business, Modifier = businessModifier });
 
             // Act
             var result = _quoteOrchestrator.GenerateQuote(request);

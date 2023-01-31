@@ -12,6 +12,7 @@ using FluentValidation.AspNetCore;
 using System.IO;
 using System.Reflection;
 using System;
+using Coterie.Api.Repositories;
 
 namespace Coterie.Api
 {
@@ -35,8 +36,12 @@ namespace Coterie.Api
                 c.IncludeXmlComments(docs);
             });
 
-            services.AddScoped<IQuoteOrchestrator, QuoteOrchestrator>();
+            services.AddScoped<IQuoteOrchestrator, QuoteOrchestrator>()
+                    .AddScoped<IQuoteRepository, QuoteRepository>();
+            
             services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<Startup>();
+            services.AddMemoryCache();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

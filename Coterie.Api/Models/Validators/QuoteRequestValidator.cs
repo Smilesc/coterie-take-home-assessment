@@ -1,12 +1,20 @@
-﻿using Coterie.Api.Models.Requests;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Coterie.Api.Interfaces;
+using Coterie.Api.Models.Requests;
 using FluentValidation;
+using FluentValidation.Results;
 
 namespace Coterie.Api.Models.Validators
 {
     public class QuoteRequestValidator : AbstractValidator<QuoteRequest>
     {
-        public QuoteRequestValidator()
+        private readonly IQuoteOrchestrator _quoteOrchestrator;
+        
+        public QuoteRequestValidator(IQuoteOrchestrator quoteOrchestrator)
         {
+            _quoteOrchestrator = quoteOrchestrator;
+            
             RuleFor(x => x.Revenue)
                 .NotEmpty()
                 .WithMessage("Must include revenue");
@@ -17,8 +25,16 @@ namespace Coterie.Api.Models.Validators
             .WithMessage("At least one of the states given isn't supported").WithErrorCode("UNSUP_STATE");
 
             RuleFor(x => x.Business)
-                .Must(business => QuoteConstants.Businesses.Exists(x => business.ToUpper() == x.BusinessName))
-                .WithMessage("The business given isn't supported").WithErrorCode("UNSUP_BUSINESS");
+                .Custom(ValidateBusiness);
+        }
+
+        private void ValidateBusiness(string business, ValidationContext<QuoteRequest> context)
+        {
+            var result = _quoteOrchestrator.GetBusiness(business);
+            if(result is null)
+            {
+                context.AddFailure(new ValidationFailure{ErrorCode = "UNSUP_BUSINESS", ErrorMessage = "The business given isn't supported"});
+            }
         }
     }
 }
